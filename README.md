@@ -1,99 +1,97 @@
-# StudentPay - He thong thanh toan thong minh cho hoc sinh
+# Student Pay: A Blockchain application building a wallet system for managing student spending through internal tokens.
 
-## Mo ta
+## Describe
 
-StudentPay la he thong thanh toan dua tren mang luoi Stellar Blockchain (Testnet), cho phep hoc sinh chi tieu duoi su giam sat cua phu huynh. He thong su dung co che 3 luong kiem soat (Xanh/Do/Vang) va ho tro da chu ky (Multi-sig) ket hop gioi han thoi gian (Timebound 5 phut).
+StudentPay is a payment system based on the Stellar Blockchain (Testnet), allowing students to spend under parental supervision. The system uses a 3-tier control mechanism (Green/Red/Yellow) and supports multi-signature payments combined with a time-bound (5-minute) limit.
 
-## Kien truc he thong
+## System Architecture
 
-He thong gom 3 thanh phan chinh:
+The system consists of three main components:
 
 ### Backend
 
-- **Compliance Server (cong 3001)** - file `app.js`: Xu ly logic thanh toan voi 3 luong:
-  - Luong Xanh (Whitelist): Tu dong duyet, tien di ngay
-  - Luong Do (Blacklist): Tu dong chan, tu choi giao dich
-  - Luong Vang (Ngoai luong): Treo lenh cho phu huynh duyet trong 5 phut
+- **Compliance Server (3001)** - file `app.js`: Processing payment logic with 3 threads
+  - Green (Whitelist): Auto-approved, instant transfer.
+  - Red (Blacklist): Auto-blocked, transaction denied.
+  - Yellow (Unlisted): Pending 5 minutes for parent approval.
 
-- **Merchant Callbacks Server (cong 3030)** - file `merchant-callbacks-3030.js`: Quan ly so du va lich su giao dich cua cac cua hang. Cung cap API cho MerchantView polling du lieu moi 3 giay.
+- **Merchant Callbacks Server (cong 3030)** - file `merchant-callbacks-3030.js`: Manage store balances and transaction history. Provide an API for MerchantView to poll data every 3 seconds.
 
-### Frontend (React - cong 3000)
+### Frontend (React - 3000)
 
-Ung dung React don trang (SPA) voi man hinh Mock Login phan quyen 3 vai tro:
+React Single Page Application (SPA) featuring a Mock Login interface for Role-Based Access Control (3 distinct roles):
 
-- **StudentView**: Giao dien hoc sinh chon noi thanh toan va so tien. Hien thi ket qua theo 3 mau (xanh/do/vang).
-- **ParentView**: Giao dien phu huynh gom 2 phan - cai dat (whitelist/blacklist/han muc) va duyet lenh dang cho.
-- **MerchantView**: Dashboard cua hang hien thi so du real-time, lich su giao dich, hieu ung Ting Ting khi co tien vao, va nut Rut tien (Burn Token).
+- **StudentView**: The interface allows students to select the payment method and amount. The results are displayed in three colors (green/red/yellow).
+- **ParentView**: The parent interface consists of two parts - settings (whitelist/blacklist/limits) and pending order approval.
+- **MerchantView**: The company's dashboard displays real-time balance, transaction history, a Ting Ting effect when she enters, and a Withdraw (Burn Token) button.
 
-## Nhung gi da lam (phan bo sung)
+## The updating for Merchant
 
-Du an ban dau da co StudentView va ParentView (khoang 70%). Phan bo sung gom:
+1. **Tao MerchantDashboard.js** - Component React for the frontend:
+   - Automatically calls the API every 3 seconds to fetch real-time balances.
+   - Compares the previous and current balance, triggering a "Ting Ting" notification effect upon increment.
+   - Displays a detailed history table including timestamp, transaction type, amount, and description.
+   - End-of-day "Withdraw" button that explicitly triggers the Burn Token API to simulate fiat payout.
 
-1. **Tao MerchantDashboard.js** - Component React cho giao dien cua hang:
-   - REST Polling moi 3 giay goi API lay so du
-   - So sanh balance cu va moi, neu tang thi no hieu ung Ting Ting
-   - Bang lich su giao dich (thoi gian, loai, so tien, mo ta)
-   - Nut Rut tien cuoi ngay goi API Burn Token
+2. **Nang cap merchant-callbacks-3030.js** - Backend for merchant:
+   - Initialized 3 mock merchants in the database (canteen, pizza, game).
+   - Implemented GET /api/merchant/transactions/:id API to fetch transaction history.
+   - Implemented GET /api/merchant/list API to retrieve the merchant directory.
+   - Upgraded webhook callbacks to systematically log transactions upon receiving funds.
 
-2. **Nang cap merchant-callbacks-3030.js** - Bo sung backend cho merchant:
-   - Them 3 merchant mau (canteen, pizza, game)
-   - Them API GET /api/merchant/transactions/:id (lich su giao dich)
-   - Them API GET /api/merchant/list (danh sach merchant)
-   - Cap nhat callback ghi log giao dich khi nhan tien
-
-3. **Cap nhat App.js** - Them man hinh Mock Login:
-   - 3 nut chon vai tro: Hoc Sinh / Phu Huynh / Cua Hang
-   - Thanh navigation tren cung voi nut Doi vai tro
-   - Routing noi bo render view theo vai tro duoc chon
-
-4. **Viet lai App.css** - Thiet ke giao dien moi:
+3. **Cap nhat App.js** - Mock Login Frontend:
+   - Mock Login Screen: Added selection buttons for 3 roles: Student / Parent / Merchant.
+   - Navigation: Implemented a top navigation bar featuring a "Switch Role" action.
+   - Dynamic Routing: Configured internal routing to dynamically render the corresponding view based on the selected role.
+     
+4. **Viet lai App.css** - Design Frontend:
    - Dark mode theme voi hieu ung glassmorphism
-   - Font Inter tu Google Fonts
-   - Animation cho Ting Ting, pulse balance, fade in
-   - Responsive cho man hinh nho
+   - Integrated the Inter font family from Google Fonts for a clean, professional typography.
+   - Engineered custom CSS animations, including "Ting Ting" popups, balance pulsing, and fade-in transitions.
+   - Fully responsive layout optimized for mobile and small screens.
 
-## Huong dan chay
+## How to run
 
-### Yeu cau
+### Condition
 
-- Node.js (phien ban 18 tro len)
+- Node.js (version 18)
 - npm
 
-### Cai dat
+### Setting
 
 ```bash
-# Cai dependencies cho backend (thu muc goc)
+# Set dependencies for the backend (original file)
 cd StudentPay
 npm install
 
-# Cai dependencies cho frontend (thu muc bank-portal)
+# Serrinf dependencies for the frontend (bank-portal file)
 cd bank-portal
 npm install
 ```
 
-### Chay du an
+### Run
 
-Mo 3 terminal rieng biet:
+Open 3 terminal:
 
 ```bash
-# Terminal 1: Chay Compliance Server (cong 3001)
+# Terminal 1: Run Compliance Server (3001)
 cd StudentPay
 node app.js
 
-# Terminal 2: Chay Merchant Callbacks Server (cong 3030)
+# Terminal 2: Run Merchant Callbacks Server (3030)
 cd StudentPay
 node merchant-callbacks-3030.js
 
-# Terminal 3: Chay React Frontend (cong 3000)
+# Terminal 3: Run React Frontend (3000)
 cd StudentPay/bank-portal
 npm start
 ```
 
-Truy cap http://localhost:3000 de su dung ung dung.
+Access http://localhost:3000.
 
-### Test nhanh luong Ting Ting
+### Test the "Ting Ting"
 
-Mo terminal moi va gui lenh gia lap tien vao:
+Open a new terminal and send the following command to the emulator:
 
 ```bash
 # Windows PowerShell
@@ -105,9 +103,7 @@ curl -X POST http://localhost:3030/internal/stellar-callback \
   -d '{"targetWallet":"canteen*studentpay.com","amount":50,"fromStudent":"hs01"}'
 ```
 
-Sau do vao Merchant Dashboard se thay so du tang va hieu ung Ting Ting xuat hien.
-
-## Cau truc thu muc
+## Directory structure
 
 ```
 StudentPay/
@@ -133,7 +129,7 @@ StudentPay/
       stellarService.js         # Ket noi Stellar Blockchain
 ```
 
-## Cong nghe su dung
+## Technical tools
 
 - React 19
 - Node.js + Express
