@@ -136,4 +136,4 @@ StudentPay/
 - Stellar SDK (Testnet)
 - REST API + Polling
 
-#Copyright@Team10BlockchainandFinancialProjectsfromVNUIS2026(Trang,Phuc,Tuong,Ngan)
+#Copyright@Team10BlockchainandFinancialProjectsfromVNUIS2026(Trang,Phuc,Tuong,Ngan)All Rights Reserved.
