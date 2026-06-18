@@ -27,24 +27,24 @@ React Single Page Application (SPA) featuring a Mock Login interface for Role-Ba
 
 ## The updating for Merchant
 
-1. **Tao MerchantDashboard.js** - Component React for the frontend:
+1. **Create MerchantDashboard.js** - Component React for the frontend:
    - Automatically calls the API every 3 seconds to fetch real-time balances.
    - Compares the previous and current balance, triggering a "Ting Ting" notification effect upon increment.
    - Displays a detailed history table including timestamp, transaction type, amount, and description.
    - End-of-day "Withdraw" button that explicitly triggers the Burn Token API to simulate fiat payout.
 
-2. **Nang cap merchant-callbacks-3030.js** - Backend for merchant:
+2. **Upgrade merchant-callbacks-3030.js** - Backend for merchant:
    - Initialized 3 mock merchants in the database (canteen, pizza, game).
    - Implemented GET /api/merchant/transactions/:id API to fetch transaction history.
    - Implemented GET /api/merchant/list API to retrieve the merchant directory.
    - Upgraded webhook callbacks to systematically log transactions upon receiving funds.
 
-3. **Cap nhat App.js** - Mock Login Frontend:
+3. **Update App.js** - Mock Login Frontend:
    - Mock Login Screen: Added selection buttons for 3 roles: Student / Parent / Merchant.
    - Navigation: Implemented a top navigation bar featuring a "Switch Role" action.
    - Dynamic Routing: Configured internal routing to dynamically render the corresponding view based on the selected role.
      
-4. **Viet lai App.css** - Design Frontend:
+4. **Rewrite App.css** - Design Frontend:
    - Dark mode theme voi hieu ung glassmorphism
    - Integrated the Inter font family from Google Fonts for a clean, professional typography.
    - Engineered custom CSS animations, including "Ting Ting" popups, balance pulsing, and fade-in transitions.
